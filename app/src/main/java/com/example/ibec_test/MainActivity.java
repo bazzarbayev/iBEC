@@ -1,22 +1,15 @@
 package com.example.ibec_test;
 
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,32 +46,47 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(decoration);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) {
-                    // Scrolling up
-                } else {
-                    // Scrolling down
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-                    // Do something
-                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    // Do something
-                } else {
-                    // Do something
-//                    progressBar.setVisibility(View.VISIBLE);
+                if (newsList.size() == 0)
+                    return;
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    int itemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                    if (itemPosition == (newsList.size() - 1)) {
+                        // here you can fetch new data from server.
+                    }
                 }
             }
         });
+
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                if (dy > 0) {
+//                    // Scrolling up
+//                } else {
+//                    // Scrolling down
+//                    progressBar.setVisibility(View.GONE);
+//                }
+//            }
+//
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//
+//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+//                    // Do something
+//                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+//                    // Do something
+//                } else {
+//                    // Do something
+////                    progressBar.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
 
         newsList = new ArrayList<>();
         getNews();
