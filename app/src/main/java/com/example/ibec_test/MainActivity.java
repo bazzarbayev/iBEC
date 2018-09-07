@@ -6,6 +6,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import java.util.ArrayList;
@@ -45,53 +46,44 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
         recyclerView.addItemDecoration(decoration);
 
+        adapter = new NewsAdapter(this);
+        recyclerView.setAdapter(adapter);
+
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    // Scrolling up
+                } else {
+                    // Scrolling down
+//                    progressBar.setVisibility(View.VISIBLE);
+                    getNews();
+                }
+            }
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newsList.size() == 0)
-                    return;
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    int itemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                    if (itemPosition == (newsList.size() - 1)) {
-                        // here you can fetch new data from server.
-                    }
+
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+                    // Do something
+                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    // Do something
+                } else {
+                    // Do something
+//                    progressBar.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//                if (dy > 0) {
-//                    // Scrolling up
-//                } else {
-//                    // Scrolling down
-//                    progressBar.setVisibility(View.GONE);
-//                }
-//            }
-//
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-//
-//                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-//                    // Do something
-//                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-//                    // Do something
-//                } else {
-//                    // Do something
-////                    progressBar.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        });
 
         newsList = new ArrayList<>();
         getNews();
 
     }
+
 
 
     private void getNews() {
@@ -103,15 +95,15 @@ public class MainActivity extends AppCompatActivity {
         Api api = retrofit.create(Api.class);
 
         Call<GetNewsResponse> call = api.getNews();
-        progressBar.setVisibility(View.GONE);
+//        progressBar.setVisibility(View.GONE);
 
         call.enqueue(new Callback<GetNewsResponse>() {
             @Override
             public void onResponse(Call<GetNewsResponse> call, Response<GetNewsResponse> response) {
                 List<News> newsList = response.body().articles;
 
-                adapter = new NewsAdapter(newsList, getApplicationContext());
-                recyclerView.setAdapter(adapter);
+                adapter.setNews(newsList);
+                adapter.notifyDataSetChanged();
             }
 
             @Override

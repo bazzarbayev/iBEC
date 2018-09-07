@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.HeroViewHolder> {
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
 
 
-    private List<News> newsList;
+    private List<News> newsList = new ArrayList();
     private Context context;
 
     private ArrayList<GetNewsResponse> mModel;
@@ -27,16 +27,23 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.HeroViewHolder
 
     private static int currentPosition = 0;
 
-    public NewsAdapter(List<News> heroList, Context context) {
-        this.newsList = heroList;
+    public NewsAdapter(Context context) {
         this.context = context;
     }
 
-    public static class HeroViewHolder extends RecyclerView.ViewHolder {
+    public void setNews(List<News> newsList) {
+        if (this.newsList == null) {
+            this.newsList = newsList;
+        } else {
+            this.newsList.addAll(newsList);
+        }
+    }
+
+    public static class NewsViewHolder extends RecyclerView.ViewHolder {
         TextView textViewTitle, textViewDescription;
         ImageView imageView;
 
-        HeroViewHolder(View itemView) {
+        NewsViewHolder(View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.txtTitle);
@@ -48,14 +55,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.HeroViewHolder
 
 
     @Override
-    public HeroViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {      //NewsAdapter
+    public NewsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {      //NewsAdapter
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_layout_news, parent, false);
-        return  new HeroViewHolder(v);
+        return  new NewsViewHolder(v);
     }
 
 
     @Override
-    public void onBindViewHolder(final HeroViewHolder holder, final int position) {
+    public void onBindViewHolder(final NewsViewHolder holder, final int position) {
         final News news = newsList.get(position);
         holder.textViewTitle.setText(news.getTitle());
 
@@ -82,7 +89,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.HeroViewHolder
                 currentPosition = position;
 
                 Intent intent = new Intent(context, InfoActivity.class);
-//                intent.putExtra("news_id", news.getId());
                 intent.putExtra("news_title", news.getTitle());
                 intent.putExtra("news_description", news.getDescription());
                 intent.putExtra("news_url", news.getUrl());
